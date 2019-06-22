@@ -17,12 +17,16 @@ public class HangMan implements KeyListener {
 	JLabel label = new JLabel();
 	JLabel lives = new JLabel();
 	int livesInt = 10;
+	String liveCount = Integer.toString(livesInt);
+	String currentWord;
 	Stack<String> words = new Stack<String>();
 	Utilities util = new Utilities();
 	ArrayList<String> wordLength = new ArrayList<String>();
-	String currentWord = words.pop();
+	ArrayList<String> wordDisplayed = new ArrayList<String>();
+	String[] wordDisplayedArray;
 
 	public static void main(String[] args) {
+
 		HangMan hangman = new HangMan();
 
 		hangman.initialize();
@@ -41,24 +45,29 @@ public class HangMan implements KeyListener {
 		panel.add(lives);
 		frame.add(panel);
 
-		String asdf = JOptionPane.showInputDialog("Pick a number from 1 to 266");
+		String asdf = JOptionPane
+				.showInputDialog("How many words would you like to guess? (Pick a number from 1 - 266)");
 		int numberOfWordsChosen = Integer.parseInt(asdf);
-		String liveCount = Integer.toString(livesInt);
-		
-		
 
 		for (int i = 0; i < numberOfWordsChosen; i++) {
 			words.push(util.readRandomLineFromFile("dictionary.txt"));
 		}
 
+		currentWord = words.pop();
+
+		wordDisplayedArray = new String[currentWord.length()];
+
 		for (int i = 0; i < currentWord.length(); i++) {
-			
+
 			wordLength.add(i, Character.toString(currentWord.charAt(i)));
+
+			wordDisplayedArray[i] = " _ ";
+
+			wordDisplayed.add(i, " _ ");
 		}
 
-		label.setText(wordLength.toString());
-		lives.setText("Lives: " + liveCount);
-	
+		label.setText(wordDisplayed.toString());
+		lives.setText("Lives: " + liveCount + currentWord);
 
 	}
 
@@ -66,12 +75,48 @@ public class HangMan implements KeyListener {
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
 
+		for (int i = 0; i < wordLength.size(); i++) {
+
+			if (Character.toString(e.getKeyChar()).equals(wordLength.get(i))) {
+				System.out.println("asdf");
+
+				for (int a = 0; a < wordLength.size(); a++) {
+
+					if (Character.toString(e.getKeyChar()).equals(wordLength.get(a))) {
+
+						wordDisplayedArray[a] = Character.toString(e.getKeyChar());
+
+						wordDisplayed.clear();
+
+						for (int x = 0; x < wordLength.size(); x++) {
+
+							wordDisplayed.add(x, wordDisplayedArray[x]);
+
+						}
+
+						label.setText(wordDisplayed.toString());
+					}
+				}
+			}
+		}
+		
+		for (int i = 0; i < wordLength.size(); i++) {
+			if (!Character.toString(e.getKeyChar()).equals(wordLength.get(i))) {
+
+				livesInt--;
+				liveCount = Integer.toString(livesInt);
+				lives.setText("Lives: " + liveCount + currentWord);
+				if (livesInt <= 0) {
+					JOptionPane.showMessageDialog(null, "You lost!");
+				}
+				break;
+			}
+		}
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
-	
 
 	}
 
